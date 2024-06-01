@@ -3,16 +3,19 @@ const mongoose = require('mongoose');
 const restaurantSchema = new mongoose.Schema({
     name: {
         type: String,
-        required: true
+        required: true,
+        maxlength:60
       },
-      address: {
+    address: {
         type: String,
-        required: true
+        required: true,
+        maxlength:60
       },
-      telephone: {
+    telephone: {
         type: String,
-        required: true
-      }
+        required: true,
+        maxlength:15
+    }
 });
 
 module.exports = mongoose.model('Restaurant', restaurantSchema)

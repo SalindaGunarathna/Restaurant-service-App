@@ -14,8 +14,11 @@ app.use(bodyParser.raw());
  
 app.use(cors());
 
+const restaurant = require('./routes/restaurantRoutes');
 
+app.use('/api/restaurant', restaurant)
 
+// error handler
 app.use ((err,req,res,next) => {
      
    

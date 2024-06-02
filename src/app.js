@@ -3,16 +3,21 @@ const express = require('express')
 const cors = require('cors');    
 const createHttpError = require('http-errors')
 const bodyParser = require('body-parser');
+const path = require('path');
+const fileUpload = require('express-fileupload'); 
+
 
 const app = express()
 app.use(express.json()); 
+app.use(fileUpload()); 
 
 
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({ extended: true })); 
 app.use(bodyParser.json());
 app.use(bodyParser.raw()); 
- 
 app.use(cors());
+
+app.use('/public', express.static(path.join(__dirname, '..', '..', '..', 'public')));
 
 const restaurant = require('./routes/restaurantRoutes');
 

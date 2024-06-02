@@ -38,13 +38,17 @@ const uploadFileToLocalDirectory = async (file) => {
 // delete file
 const deleteFile = async (filepath) => {
  // const drive = await authenticateAPI();
- fs.unlink(filepath, (err) => {
-  if (err) {
-    console.error("Unable to delete local image file:", err);
-  } else {
-    console.log("Local image file deleted successfully.");
-  }
-});
+ if (filepath !=" "){
+  fs.unlink(filepath, (err) => {
+    if (err) {
+      console.error("Unable to delete local image file:", err);
+    } else {
+      console.log("Local image file deleted successfully.");
+    }
+  });
+
+ }
+
     return  204;
 
 };

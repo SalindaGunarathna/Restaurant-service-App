@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "nodemon src/server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "author": "",
   "license": "ISC",
@@ -19,11 +19,17 @@
     "express-fileupload": "^1.5.0",
     "http-errors": "^2.0.0",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.4.1",
     "nodemon": "^3.1.2",
     "restaurant": "^1.2.11",
     "service": "^0.1.4",
     "uuid": "^9.0.1",
     "validator": "^13.12.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "mockingoose": "^2.16.2",
+    "mongodb-memory-server": "^9.3.0",
+    "mongoose": "^8.4.1",
+    "supertest": "^7.0.0"
   }
 }

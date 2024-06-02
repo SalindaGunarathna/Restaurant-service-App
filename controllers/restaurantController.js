@@ -1,5 +1,4 @@
 const Restaurant = require('../model/restaurant');
-
 const validateRestaurantData = require('../validator/restaurant')
 
 // Create a new restaurant
@@ -41,7 +40,7 @@ exports.createRestaurant = async (req, res,next) => {
     try {
       // validate basic details before updating existing restaurant
       const isvalidate = validateRestaurantData(req);
-      
+
       // if isvalidate is true then update
       if(isvalidate){
         const restaurant = await Restaurant.findById(req.params.id);

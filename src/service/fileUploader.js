@@ -28,6 +28,8 @@ const uploadFileToLocalDirectory = async (file) => {
     filDirectoryepath = path.join(__dirname,     '..','..','public', 'file', uniqueFilename);  
    
     file.mv(filDirectoryepath); // save file to local location
+
+    // in database  only store relative path for thatdefine filepath
     const filepath = `file/${uniqueFilename}`;
     
     return { filepath };
@@ -39,9 +41,12 @@ const uploadFileToLocalDirectory = async (file) => {
 
 // delete file
 const deleteFile = async (filepath) => {
- // const drive = await authenticateAPI();
- if (filepath !=" "){
-  fs.unlink(filepath, (err) => {
+
+ // re generate actual file path to delete file using relative path 
+ let filDirectoryepath =  path.join(__dirname,     '..','..','public',filepath); 
+
+ if (filDirectoryepath !=" "){
+  fs.unlink(filDirectoryepath, (err) => {
     if (err) {
       console.error("Unable to delete local image file:", err);
     } else {
@@ -50,7 +55,6 @@ const deleteFile = async (filepath) => {
   });
 
  }
-
     return  204;
 
 };

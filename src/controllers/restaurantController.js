@@ -86,6 +86,7 @@ exports.deleteRestaurant = async (req, res, next) => {
     const deletedRestaurant = await Restaurant.findByIdAndDelete(req.params.id);
 
     if (deletedRestaurant.image !== " ") {
+      // Delete the image file  
       deleteFile(deletedRestaurant.image);
     }
 

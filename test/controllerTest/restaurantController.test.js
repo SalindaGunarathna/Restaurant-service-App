@@ -26,6 +26,7 @@ afterAll(async () => {
 
 describe('Restaurant Controller Test', () => {
 
+    // Unit test for create resturent 
   it('should create a new restaurant', async () => {
     const newRestaurant = { name: 'Test Eatery', address: '123 Test Lane', telephone: '123-456-7890' };
 
@@ -43,6 +44,7 @@ describe('Restaurant Controller Test', () => {
     expect(response.body.image).toBeNull(); // Since no image is provided
   });
 
+  // Unit test for get all resturent 
   it('should get all restaurants', async () => {
     const response = await request(app).get('/api/restaurants/retrieveall');
 
@@ -50,6 +52,8 @@ describe('Restaurant Controller Test', () => {
     expect(Array.isArray(response.body)).toBe(true);
   });
 
+
+  // Unit test for find single resturent 
   it('should get a single restaurant', async () => {
     const restaurant = new Restaurant({ name: 'Test Eatery', address: '123 Test Lane', telephone: '123-456-7890' });
     await restaurant.save();
@@ -62,7 +66,9 @@ describe('Restaurant Controller Test', () => {
     expect(response.body.address).toBe(restaurant.address);
     expect(response.body.telephone).toBe(restaurant.telephone);
   });
+   
 
+  // Unit test for update resturent 
   it('should update a restaurant', async () => {
     const restaurant = new Restaurant({ name: 'Test Eatery', address: '123 Test Lane', telephone: '123-456-7890' });
     await restaurant.save();
@@ -80,6 +86,8 @@ describe('Restaurant Controller Test', () => {
     expect(response.body.telephone).toBe(updatedData.telephone);
   });
 
+
+  // Unit test for Delete resturent 
   it('should delete a restaurant', async () => {
     const restaurant = new Restaurant({ name: 'Test Eatery', address: '123 Test Lane', telephone: '123-456-7890' });
     await restaurant.save();

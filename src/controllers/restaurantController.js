@@ -75,7 +75,7 @@ exports.updateRestaurant = async (req, res, next) => {
     res.status(200).json(restaurant);
   } catch (err) {
     console.error("Error updating restaurant:", err); // Enhanced logging
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: err.message }); 
     next(err);
   }
 };

@@ -23,11 +23,13 @@ const uploadFileToLocalDirectory = async (file) => {
     // Construct a unique filename by appending the uniqueId and file extension
     const uniqueFilename = `${uniqueId}.${fileExtension}`;
     // Set the local file path with the unique filename
-    let filepath  = " "; // default
+    let filDirectoryepath  = " "; // default
 
-    filepath = path.join(__dirname,     '..','..','public', 'file', uniqueFilename);  
+    filDirectoryepath = path.join(__dirname,     '..','..','public', 'file', uniqueFilename);  
    
-    file.mv(filepath); // save file to local location
+    file.mv(filDirectoryepath); // save file to local location
+    const filepath = `file/${uniqueFilename}`;
+    
     return { filepath };
   } catch (error) {
     console.log(error)

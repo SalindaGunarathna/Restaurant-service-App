@@ -19,6 +19,9 @@ app.use(cors());
 
 app.use('/public', express.static(path.join(__dirname, '..', '..', '..', 'public')));
 
+// Serve static files from the 'public' directory
+app.use('/public', express.static(path.join(__dirname, '..', 'public')));
+
 const restaurant = require('./routes/restaurantRoutes');
 
 app.use('/api/restaurant', restaurant)

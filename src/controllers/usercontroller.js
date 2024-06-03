@@ -1,9 +1,7 @@
 const createHttpError = require("http-errors");
-
 const mongoose = require("mongoose");
 require("dotenv").config();
 const User = require("../model/user")
-
 const { config } = require("dotenv");
 
 

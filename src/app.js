@@ -23,8 +23,10 @@ app.use('/public', express.static(path.join(__dirname, '..', '..', '..', 'public
 app.use('/public', express.static(path.join(__dirname, '..', 'public')));
 
 const restaurant = require('./routes/restaurantRoutes');
+const user = require('./routes/userRoutes');
 
 app.use('/api/restaurant', restaurant)
+app.use('/api/user', user)
 
 // error handler
 app.use ((err,req,res,next) => {

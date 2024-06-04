@@ -9,6 +9,7 @@ services:
       - PORT=${PORT}        # Environment variable for the application port
       - MONGO_URI=${MONGO_URI}    # Environment variable for the database URL
       - SECRET_KEY=${SECRET_KEY} # Environment variable for the secret key
+      - TEST_MONGO_URI=${TEST_MONGO_URI}
     volumes:
       - .:/usr/src/app     # Mount the current directory to the container's working directory
       - ./public:/usr/src/app/public 

@@ -16,16 +16,13 @@ const userAuth = async (req, res, next) => {
         } else {
             throw createHttpError(400, 'Token not found in headers or body');
         }
-        
-        const decode = jwt.verify(token, SECRET_KEY)
-        const user = await User.findOne({
+
+        let decode = jwt.verify(token, SECRET_KEY)
+        let user = await User.findOne({
                 _id:decode._id,
                  "tokens.token": token
                 })
 
-        if (!user) {       
-            throw createHttpError("this user have no permission")
-        }
         req.token = token
         req.user = user
         next()

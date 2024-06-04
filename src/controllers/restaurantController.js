@@ -39,7 +39,13 @@ exports.getAllRestaurant = async (req, res, next) => {
 exports.getSingleRestaurant = async (req, res, next) => {
   const id = req.params.id;
   try {
-    const restaurant = await Restaurant.findById(id);
+    try {
+      var restaurant = await Restaurant.findById(id);
+      
+    } catch (error) {
+      throw createHttpError(404, "Restaurant not found");     
+    }
+    
     res.status(200).json(restaurant);
   } catch (err) {
     next(err);

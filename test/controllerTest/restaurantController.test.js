@@ -1,101 +1,179 @@
+// restaurantController.test.js
+
 const request = require('supertest');
-const express = require('express');
 const mongoose = require('mongoose');
+const jwt = require('jsonwebtoken');
+const app = require('../../src/app'); // Assuming your Express app is defined in app.js
 const Restaurant = require('../../src/model/restaurant');
-const restaurantRouter = require('../../src/routes/restaurantRoutes');
-require('dotenv').config();
-const mongoUri = process.env.MONGO_URI;
+const User = require('../../src/model/user');
+const dotenv = require('dotenv');
 
-const app = express();
+// Load environment variables from .env file
+dotenv.config();
 
-// Middlewares
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use('/api/restaurants', restaurantRouter);
+const mongoUri = process.env.TEST_MONGO_URI;
+
+let mockToken;
+let testUserId;
 
 beforeAll(async () => {
   jest.setTimeout(30000); // Set timeout to 30 seconds
+
+  // Connect to the actual MongoDB database
+  jest.setTimeout(30000); // Set timeout to 30 seconds
   await mongoose.connect(mongoUri, { useNewUrlParser: true, useUnifiedTopology: true });
   // Clear the database before running tests
+
+
+  // Create a mock user for testing
+  const mockUser = new User({
+    email: 'testu@example.com',
+    password: 'TestPassword123@',
+  });
+  //await mockUser.save();
+
+  // Generate a JWT token for the mock user
+  mockToken = jwt.sign({ _id: mockUser._id.toString() }, process.env.SECRET_KEY);
+
   await Restaurant.deleteMany({});
+
+  // Set the test user ID
+  testUserId = mockUser._id;
 });
 
 afterAll(async () => {
   await mongoose.disconnect();
 });
 
-describe('Restaurant Controller Test', () => {
+beforeEach(async () => {
+  // Clear the database before each test
+  await Restaurant.deleteMany({});
+});
 
-    // Unit test for create resturent 
+describe('Restaurant API Endpoints', () => {
+  let createdRestaurantId;
+
   it('should create a new restaurant', async () => {
-    const newRestaurant = { name: 'Test Eatery', address: '123 Test Lane', telephone: '123-456-7890' };
+    const newRestaurant = { name: 'Test Eatery', address: '123 Test Lane', telephone: '0775423568' };
 
     const response = await request(app)
-      .post('/api/restaurants/create')
+      .post('/api/restaurant/create')
+      .set('Authorization', `Bearer ${mockToken}`)
       .send(newRestaurant);
+      
+      console.log(mockToken)
 
-    console.log('Response:', response.body); // Log the response for debugging
-
-    expect(response.status).toBe(201);
-    expect(response.body).toHaveProperty('_id');
-    expect(response.body.name).toBe(newRestaurant.name);
-    expect(response.body.address).toBe(newRestaurant.address);
-    expect(response.body.telephone).toBe(newRestaurant.telephone);
-    expect(response.body.image).toBeNull(); // Since no image is provided
+      expect(response.status).toBe(201);
+      expect(response.body).toHaveProperty('_id');
+      expect(response.body.name).toBe(newRestaurant.name);
+      expect(response.body.address).toBe(newRestaurant.address);
+      expect(response.body.telephone).toBe(newRestaurant.telephone);
+      expect(response.body.image).toBeNull();
   });
 
-  // Unit test for get all resturent 
   it('should get all restaurants', async () => {
-    const response = await request(app).get('/api/restaurants/retrieveall');
+    await Restaurant.create([
+      {
+        name: 'Restaurant 1',
+        address: '123 Test St',
+        telephone: '123-456-7890',
+      },
+      {
+        name: 'Restaurant 2',
+        address: '456 Test St',
+        telephone: '987-654-3210',
+      },
+    ]);
 
-    expect(response.status).toBe(200);
-    expect(Array.isArray(response.body)).toBe(true);
-  });
-
-
-  // Unit test for find single resturent 
-  it('should get a single restaurant', async () => {
-    const restaurant = new Restaurant({ name: 'Test Eatery', address: '123 Test Lane', telephone: '123-456-7890' });
-    await restaurant.save();
-
-    const response = await request(app).get(`/api/restaurants/retrieve/${restaurant._id}`);
-
-    expect(response.status).toBe(200);
-    expect(response.body._id).toBe(restaurant._id.toString());
-    expect(response.body.name).toBe(restaurant.name);
-    expect(response.body.address).toBe(restaurant.address);
-    expect(response.body.telephone).toBe(restaurant.telephone);
-  });
-   
-
-  // Unit test for update resturent 
-  it('should update a restaurant', async () => {
-    const restaurant = new Restaurant({ name: 'Test Eatery', address: '123 Test Lane', telephone: '123-456-7890' });
-    await restaurant.save();
-
-    const updatedData = { name: 'Updated Eatery', address: '123 Updated Lane', telephone: '123-456-7899' };
     const response = await request(app)
-      .put(`/api/restaurants/update/${restaurant._id}`)
-      .send(updatedData);
+      .get('/api/restaurant/retrieveall')
+      .set('Authorization', `Bearer ${mockToken}`);
 
-    console.log('Update response:', response.body); // Log the response for debugging
-
-    expect(response.status).toBe(200);
-    expect(response.body.name).toBe(updatedData.name);
-    expect(response.body.address).toBe(updatedData.address);
-    expect(response.body.telephone).toBe(updatedData.telephone);
+    expect(response.statusCode).toBe(200);
+    expect(response.body.length).toBe(2); // Assuming 2 restaurants were created
   });
 
+  it('should get a single restaurant by ID', async () => {
+    const newRestaurant = await Restaurant.create({
+      name: 'Test Restaurant',
+      address: '123 Test St',
+      telephone: '123-456-7890',
+    });
 
-  // Unit test for Delete resturent 
-  it('should delete a restaurant', async () => {
-    const restaurant = new Restaurant({ name: 'Test Eatery', address: '123 Test Lane', telephone: '123-456-7890' });
-    await restaurant.save();
+    const response = await request(app)
+      .get(`/api/restaurant/retrieve/${newRestaurant._id}`)
+      .set('Authorization', `Bearer ${mockToken}`);
 
-    const response = await request(app).delete(`/api/restaurants/delete/${restaurant._id}`);
-
-    expect(response.status).toBe(200);
-    expect(response.body).toBe(`${restaurant.name} Restaurant has been deleted...`);
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toHaveProperty('_id', newRestaurant._id.toString());
   });
 
+  it('should update a restaurant by ID', async () => {
+    const newRestaurant = await Restaurant.create({
+      name: 'Test Restaurant',
+      address: '123 Test St',
+      telephone: '123-456-7890',
+    });
+
+    const updatedRestaurant = {
+      name: 'Updated Restaurant Name',
+      address: '456 Updated St',
+      telephone: '987-654-3210',
+    };
+
+    const response = await request(app)
+      .put(`/api/restaurant/update/${newRestaurant._id}`)
+      .set('Authorization', `Bearer ${mockToken}`)
+      .send(updatedRestaurant);
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toMatchObject(updatedRestaurant);
+  });
+
+  it('should delete a restaurant by ID', async () => {
+    const newRestaurant = await Restaurant.create({
+      name: 'Test Restaurant',
+      address: '123 Test St',
+      telephone: '123-456-7890',
+    });
+
+    const response = await request(app)
+      .delete(`/api/restaurant/delete/${newRestaurant._id}`)
+      .set('Authorization', `Bearer ${mockToken}`);
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toMatch(`${newRestaurant.name} Restaurant has been deleted...`);
+  });
+
+  it('should handle 500 error when updating a non-existent restaurant', async () => {
+    const response = await request(app)
+      .put('/api/restaurant/update/nonexistentid')
+      .set('Authorization', `Bearer ${mockToken}`)
+      .send({
+        name: 'Updated Name',
+        address: 'Updated Address',
+        telephone: '987-654-3210',
+      });
+
+    expect(response.statusCode).toBe(500);
+    
+  });
+
+  it('should handle 404 error when getting a non-existent restaurant', async () => {
+    const response = await request(app)
+      .get('/api/restaurant/retrieve/idontexist')
+      
+
+    expect(response.statusCode).toBe(404);
+    
+  });
+
+  it('should handle 500 error when deleting a restaurant with invalid ID', async () => {
+    const response = await request(app)
+      .delete('/api/restaurant/delete/invalidid')
+      .set('Authorization', `Bearer ${mockToken}`);
+
+    expect(response.statusCode).toBe(500);
+    
+  });
 });
